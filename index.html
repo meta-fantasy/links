@@ -74,8 +74,7 @@
     function createLinks() {
       let params = new URLSearchParams(window.location.search);
       let linkList = document.getElementById('linkList');
-
-      let services = {
+      let serviceKeys = {
         'in': { name: 'Instagram', desktopUrl: 'https://www.instagram.com/', mobileUrl: 'instagram://user?username=' },
         'ar': { name: 'ArtStation', desktopUrl: 'https://www.artstation.com/', mobileUrl: 'artstation://' },
         'ti': { name: 'TikTok', desktopUrl: 'https://www.tiktok.com/@', mobileUrl: 'tiktok://@' },
@@ -83,20 +82,13 @@
         'tw': { name: 'Twitter', desktopUrl: 'https://twitter.com/', mobileUrl: 'twitter://user?screen_name=' }
       };
 
-      Object.keys(services).forEach(key => {
-        if (params.has(key)) {
-          let user = params.get(key);
-          let service = services[key];
-          linkList.appendChild(createLinkElement(service.name, `${service.desktopUrl}${user}`, `${service.mobileUrl}${user}`));
+      for (let [key, value] of params) {
+        if (key.startsWith('cu')) {
+          linkList.appendChild(createLinkElement(value, params.get('cuu'), params.get('cuu')));
+        } else if (serviceKeys[key]) {
+          let service = serviceKeys[key];
+          linkList.appendChild(createLinkElement(service.name, `${service.desktopUrl}${value}`, `${service.mobileUrl}${value}`));
         }
-      });
-
-      let index = 1;
-      while (params.has(`cu${index}`)) {
-        let customName = params.get(`cu${index}`);
-        let customUrl = params.get(`cuu${index}`) || '#';
-        linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
-        index++;
       }
     }
 
