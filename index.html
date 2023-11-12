@@ -45,7 +45,7 @@
 
   <script>
     function isMobileDevice() {
-      return (window.innerWidth <= 800) && (window.innerHeight / window.innerWidth <= 1.6);
+      return window.innerWidth < 801 && window.innerWidth < window.innerHeight;
     }
 
     function openLink(event, urlDesktop, urlMobile) {
