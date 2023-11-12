@@ -74,6 +74,7 @@
     function createLinks() {
       let params = new URLSearchParams(window.location.search);
       let linkList = document.getElementById('linkList');
+
       let serviceKeys = {
         'in': { name: 'Instagram', desktopUrl: 'https://www.instagram.com/', mobileUrl: 'instagram://user?username=' },
         'ar': { name: 'ArtStation', desktopUrl: 'https://www.artstation.com/', mobileUrl: 'artstation://' },
@@ -84,7 +85,9 @@
 
       for (let [key, value] of params) {
         if (key.startsWith('cu')) {
-          linkList.appendChild(createLinkElement(value, params.get('cuu'), params.get('cuu')));
+          let customName = value;
+          let customUrl = params.get(`${key}u`) || '#';
+          linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
         } else if (serviceKeys[key]) {
           let service = serviceKeys[key];
           linkList.appendChild(createLinkElement(service.name, `${service.desktopUrl}${value}`, `${service.mobileUrl}${value}`));
