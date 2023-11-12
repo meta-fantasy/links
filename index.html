@@ -40,12 +40,53 @@
 </head>
 <body>
   <h1>Следите за мной в социальных сетях!</h1>
-  <ul class="link-list">
-    <li><a href="instagram://user?username=meta.fantasy" target="_blank">✔️ Instagram</a></li>
-    <li><a href="https://www.artstation.com/tanyamatiyasevich" target="_blank">✔️ ArtStation</a></li>
-    <li><a href="tiktok://@meta.fantasy3d" target="_blank">✔️ TikTok</a></li>
-    <li><a href="vnd.youtube://www.youtube.com/@meta.fantasy" target="_blank">✔️ YouTube</a></li>
-    <li><a href="twitter://user?screen_name=metafantasyclo" target="_blank">✔️ Twitter</a></li>
+  <ul class="link-list" id="linkList">
   </ul>
+
+  <script>
+    function isMobileDevice() {
+      return (window.innerWidth <= 800) && (window.innerHeight / window.innerWidth <= 1.6);
+    }
+
+    function openLink(event, urlDesktop, urlMobile) {
+      event.preventDefault();
+      const url = isMobileDevice() ? urlMobile : urlDesktop;
+      if (url.startsWith('http')) {
+        window.open(url, '_blank');
+      } else {
+        window.location = url;
+        setTimeout(function() {
+          window.location.href = urlDesktop;
+        }, 500);
+      }
+    }
+
+    function createLinkElement(name, urlDesktop, urlMobile) {
+      const listItem = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = '#';
+      link.textContent = `✔️ ${name}`;
+      link.onclick = (event) => openLink(event, urlDesktop, urlMobile);
+      listItem.appendChild(link);
+      return listItem;
+    }
+
+    function createLinks() {
+      const links = [
+        { name: 'Instagram', urlDesktop: 'https://www.instagram.com/meta.fantasy/', urlMobile: 'instagram://user?username=meta.fantasy' },
+        { name: 'ArtStation', urlDesktop: 'https://www.artstation.com/tanyamatiyasevich', urlMobile: 'artstation://tanyamatiyasevich' },
+        { name: 'TikTok', urlDesktop: 'https://www.tiktok.com/@meta.fantasy3d', urlMobile: 'tiktok://@meta.fantasy3d' },
+        { name: 'YouTube', urlDesktop: 'https://www.youtube.com/@meta.fantasy', urlMobile: 'vnd.youtube://www.youtube.com/@meta.fantasy' },
+        { name: 'Twitter', urlDesktop: 'https://twitter.com/metafantasyclo', urlMobile: 'twitter://user?screen_name=metafantasyclo' },
+      ];
+
+      const linkList = document.getElementById('linkList');
+      links.forEach(link => {
+        linkList.appendChild(createLinkElement(link.name, link.urlDesktop, link.urlMobile));
+      });
+    }
+
+    createLinks();
+  </script>
 </body>
 </html>
