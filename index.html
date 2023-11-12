@@ -45,12 +45,12 @@
 
   <script>
     function isMobileDevice() {
-      return window.innerWidth < 801 && window.innerWidth < window.innerHeight;
+      return window.innerWidth < 800 && window.innerWidth < window.innerHeight;
     }
 
     function openLink(event, urlDesktop, urlMobile) {
       event.preventDefault();
-      const url = isMobileDevice() ? urlMobile : urlDesktop;
+      let url = isMobileDevice() ? urlMobile : urlDesktop;
       if (url.startsWith('http')) {
         window.open(url, '_blank');
       } else {
@@ -62,8 +62,8 @@
     }
 
     function createLinkElement(name, urlDesktop, urlMobile) {
-      const listItem = document.createElement('li');
-      const link = document.createElement('a');
+      let listItem = document.createElement('li');
+      let link = document.createElement('a');
       link.href = '#';
       link.textContent = `✔️ ${name}`;
       link.onclick = (event) => openLink(event, urlDesktop, urlMobile);
@@ -72,18 +72,32 @@
     }
 
     function createLinks() {
-      const links = [
-        { name: 'Instagram', urlDesktop: 'https://www.instagram.com/meta.fantasy/', urlMobile: 'instagram://user?username=meta.fantasy' },
-        { name: 'ArtStation', urlDesktop: 'https://www.artstation.com/tanyamatiyasevich', urlMobile: 'artstation://tanyamatiyasevich' },
-        { name: 'TikTok', urlDesktop: 'https://www.tiktok.com/@meta.fantasy3d', urlMobile: 'tiktok://@meta.fantasy3d' },
-        { name: 'YouTube', urlDesktop: 'https://www.youtube.com/@meta.fantasy', urlMobile: 'vnd.youtube://www.youtube.com/@meta.fantasy' },
-        { name: 'Twitter', urlDesktop: 'https://twitter.com/metafantasyclo', urlMobile: 'twitter://user?screen_name=metafantasyclo' },
-      ];
+      let params = new URLSearchParams(window.location.search);
+      let linkList = document.getElementById('linkList');
 
-      const linkList = document.getElementById('linkList');
-      links.forEach(link => {
-        linkList.appendChild(createLinkElement(link.name, link.urlDesktop, link.urlMobile));
+      let services = {
+        'in': { name: 'Instagram', desktopUrl: 'https://www.instagram.com/', mobileUrl: 'instagram://user?username=' },
+        'ar': { name: 'ArtStation', desktopUrl: 'https://www.artstation.com/', mobileUrl: 'artstation://' },
+        'ti': { name: 'TikTok', desktopUrl: 'https://www.tiktok.com/@', mobileUrl: 'tiktok://@' },
+        'yo': { name: 'YouTube', desktopUrl: 'https://www.youtube.com/@', mobileUrl: 'vnd.youtube://www.youtube.com/@' },
+        'tw': { name: 'Twitter', desktopUrl: 'https://twitter.com/', mobileUrl: 'twitter://user?screen_name=' }
+      };
+
+      Object.keys(services).forEach(key => {
+        if (params.has(key)) {
+          let user = params.get(key);
+          let service = services[key];
+          linkList.appendChild(createLinkElement(service.name, `${service.desktopUrl}${user}`, `${service.mobileUrl}${user}`));
+        }
       });
+
+      let index = 1;
+      while (params.has(`cu${index}`)) {
+        let customName = params.get(`cu${index}`);
+        let customUrl = params.get(`cuu${index}`) || '#';
+        linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
+        index++;
+      }
     }
 
     createLinks();
