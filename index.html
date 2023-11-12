@@ -59,7 +59,8 @@
     function openLink(event, urlDesktop, urlMobile) {
       event.preventDefault();
       let url = isMobileDevice() ? urlMobile : urlDesktop;
-      if (url.startsWith('http')) {
+      
+      if (urlMobile.startsWith('http')) {
         window.open(url, '_blank');
       } else {
         window.location = url;
