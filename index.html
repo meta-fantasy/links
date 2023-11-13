@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Мои Ссылки</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,6 +45,11 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
+    .material-icons {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
     @media (max-width: 600px) {
       .link-list a {
         width: 100%;
@@ -53,15 +58,34 @@
     }
   </style>
 </head>
-
 <body>
-  <h1>Следите за мной в социальных сетях!</h1>
-  <ul class="link-list" id="linkList">
-  </ul>
-
   <script>
-    function isMobileDevice() {
-      return window.innerWidth < 800 && window.innerWidth < window.innerHeight;
+    function createHeader(title) {
+      let header = document.createElement('h1');
+      header.textContent = title;
+      document.body.appendChild(header);
+    }
+
+    function createDescription(desc) {
+      let description = document.createElement('p');
+      description.textContent = desc;
+      document.body.appendChild(description);
+    }
+
+    function createLinkElement(name, urlDesktop, urlMobile, icon) {
+      let listItem = document.createElement('li');
+      let link = document.createElement('a');
+      let materialIcon = document.createElement('span');
+
+      materialIcon.classList.add('material-icons');
+      materialIcon.textContent = icon || 'link';
+
+      link.href = '#';
+      link.appendChild(materialIcon);
+      link.append(` ${name}`);
+      link.onclick = (event) => openLink(event, urlDesktop, urlMobile);
+      listItem.appendChild(link);
+      return listItem;
     }
 
     function openLink(event, urlDesktop, urlMobile) {
@@ -80,43 +104,51 @@
       }
     }
 
-    function createLinkElement(name, urlDesktop, urlMobile) {
-      let listItem = document.createElement('li');
-      let link = document.createElement('a');
-      link.href = '#';
-      link.textContent = `✔️ ${name}`;
-      link.onclick = (event) => openLink(event, urlDesktop, urlMobile);
-      listItem.appendChild(link);
-      return listItem;
+    function isMobileDevice() {
+      return window.innerWidth < 800 && window.innerWidth < window.innerHeight;
     }
 
-    function createLinks() {
+    function updatePageContent() {
       let params = new URLSearchParams(window.location.search);
-      let linkList = document.getElementById('linkList');
+      let linkList = document.createElement('ul');
+      linkList.classList.add('link-list');
+      let hasContent = false;
 
       params.forEach((value, key) => {
-        if (key.startsWith('cu')) {
-          let [customName, customUrl] = value.split('|');
+        if (key === 'h1') {
+          createHeader(value);
+          hasContent = true;
+        } else if (key === 'desc') {
+          createDescription(value);
+          hasContent = true;
+        } else if (key.startsWith('cu')) {
+          let [customName, customUrl, icon] = value.split('|');
           customUrl = customUrl.startsWith('http') ? customUrl : `http://${customUrl}`;
-          customUrl = customUrl || '#';
-          linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
+          linkList.appendChild(createLinkElement(customName, customUrl, customUrl, icon));
+          hasContent = true;
         } else if (key in serviceKeys) {
           let service = serviceKeys[key];
-          linkList.appendChild(createLinkElement(service.name, service.desktopUrl + value, service.mobileUrl + value));
+          linkList.appendChild(createLinkElement(service.name, service.desktopUrl + value, service.mobileUrl + value, service.icon));
+          hasContent = true;
         }
       });
+
+      if (hasContent) {
+        document.body.appendChild(linkList);
+      } else {
+        document.body.innerHTML = '<p></p>';
+      }
     }
 
     let serviceKeys = {
-      'in': { name: 'Instagram', desktopUrl: 'https://www.instagram.com/', mobileUrl: 'instagram://user?username=' },
-      'ar': { name: 'ArtStation', desktopUrl: 'https://www.artstation.com/', mobileUrl: 'artstation://' },
-      'ti': { name: 'TikTok', desktopUrl: 'https://www.tiktok.com/@', mobileUrl: 'tiktok://@' },
-      'yo': { name: 'YouTube', desktopUrl: 'https://www.youtube.com/@', mobileUrl: 'vnd.youtube://www.youtube.com/@' },
-      'tw': { name: 'Twitter', desktopUrl: 'https://twitter.com/', mobileUrl: 'twitter://user?screen_name=' }
+      'in': { name: 'Instagram', desktopUrl: 'https://www.instagram.com/', mobileUrl: 'instagram://user?username=', icon: 'photo_camera' },
+      'ar': { name: 'ArtStation', desktopUrl: 'https://www.artstation.com/', mobileUrl: 'artstation://', icon: 'brush' },
+      'ti': { name: 'TikTok', desktopUrl: 'https://www.tiktok.com/@', mobileUrl: 'tiktok://@', icon: 'video_camera_front' },
+      'yo': { name: 'YouTube', desktopUrl: 'https://www.youtube.com/@', mobileUrl: 'vnd.youtube://www.youtube.com/@', icon: 'play_circle' },
+      'tw': { name: 'Twitter', desktopUrl: 'https://twitter.com/', mobileUrl: 'twitter://user?screen_name=', icon: 'chat' }
     };
 
-    createLinks();
+    updatePageContent();
   </script>
 </body>
-
 </html>
