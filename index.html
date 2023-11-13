@@ -65,7 +65,9 @@
       } else {
         window.location = url;
         setTimeout(function() {
-          window.location.href = urlDesktop;
+          if (document.hasFocus()) {
+            window.location.href = urlDesktop;
+          }
         }, 500);
       }
     }
@@ -83,28 +85,31 @@
     function createLinks() {
       let params = new URLSearchParams(window.location.search);
       let linkList = document.getElementById('linkList');
+      let processedCustomLinks = {};
 
-      let serviceKeys = {
-        'in': { name: 'Instagram', desktopUrl: 'https://www.instagram.com/', mobileUrl: 'instagram://user?username=' },
-        'ar': { name: 'ArtStation', desktopUrl: 'https://www.artstation.com/', mobileUrl: 'artstation://' },
-        'ti': { name: 'TikTok', desktopUrl: 'https://www.tiktok.com/@', mobileUrl: 'tiktok://@' },
-        'yo': { name: 'YouTube', desktopUrl: 'https://www.youtube.com/@', mobileUrl: 'vnd.youtube://www.youtube.com/@' },
-        'tw': { name: 'Twitter', desktopUrl: 'https://twitter.com/', mobileUrl: 'twitter://user?screen_name=' }
-      };
-
-      for (const key of params.keys()) {
+      params.forEach((value, key) => {
         if (key.startsWith('cu') && !key.endsWith('u')) {
           let customName = params.get(key);
           let customUrlKey = `${key}u`;
           let customUrl = params.get(customUrlKey) || '#';
-          linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
+          if (!processedCustomLinks[key]) {
+            linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
+            processedCustomLinks[key] = true;
+          }
         } else if (key in serviceKeys) {
           let service = serviceKeys[key];
-          let value = params.get(key);
           linkList.appendChild(createLinkElement(service.name, service.desktopUrl + value, service.mobileUrl + value));
         }
-      }
+      });
     }
+
+    let serviceKeys = {
+      'in': { name: 'Instagram', desktopUrl: 'https://www.instagram.com/', mobileUrl: 'instagram://user?username=' },
+      'ar': { name: 'ArtStation', desktopUrl: 'https://www.artstation.com/', mobileUrl: 'artstation://' },
+      'ti': { name: 'TikTok', desktopUrl: 'https://www.tiktok.com/@', mobileUrl: 'tiktok://@' },
+      'yo': { name: 'YouTube', desktopUrl: 'https://www.youtube.com/@', mobileUrl: 'vnd.youtube://www.youtube.com/@' },
+      'tw': { name: 'Twitter', desktopUrl: 'https://twitter.com/', mobileUrl: 'twitter://user?screen_name=' }
+    };
 
     createLinks();
   </script>
