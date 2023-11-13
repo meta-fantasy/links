@@ -60,7 +60,7 @@
       event.preventDefault();
       let url = isMobileDevice() ? urlMobile : urlDesktop;
       
-      if (urlMobile.startsWith('http')) {
+      if (url.startsWith('http') || url.startsWith('https')) {
         window.open(url, '_blank');
       } else {
         window.location = url;
