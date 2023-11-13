@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,14 +12,17 @@
       text-align: center;
       padding: 20px;
     }
+
     .link-list {
       list-style: none;
       padding: 0;
       margin: 0;
     }
+
     .link-list li {
       margin-bottom: 10px;
     }
+
     .link-list a {
       text-decoration: none;
       color: #333;
@@ -27,17 +31,20 @@
       display: block;
       padding: 10px;
       border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease-in-out;
     }
+
     .link-list a:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 5px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
     }
+
     .link-list a:active {
       transform: translateY(1px);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
+
     @media (max-width: 600px) {
       .link-list a {
         width: 100%;
@@ -46,6 +53,7 @@
     }
   </style>
 </head>
+
 <body>
   <h1>Следите за мной в социальных сетях!</h1>
   <ul class="link-list" id="linkList">
@@ -59,12 +67,12 @@
     function openLink(event, urlDesktop, urlMobile) {
       event.preventDefault();
       let url = isMobileDevice() ? urlMobile : urlDesktop;
-      
+
       if (url.startsWith('http') || url.startsWith('https')) {
         window.open(url, '_blank');
       } else {
         window.location = url;
-        setTimeout(function() {
+        setTimeout(function () {
           if (document.hasFocus()) {
             window.location.href = urlDesktop;
           }
@@ -85,17 +93,13 @@
     function createLinks() {
       let params = new URLSearchParams(window.location.search);
       let linkList = document.getElementById('linkList');
-      let processedCustomLinks = {};
 
       params.forEach((value, key) => {
-        if (key.startsWith('cu') && !key.endsWith('u')) {
-          let customName = params.get(key);
-          let customUrlKey = `${key}u`;
-          let customUrl = params.get(customUrlKey) || '#';
-          if (!processedCustomLinks[key]) {
-            linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
-            processedCustomLinks[key] = true;
-          }
+        if (key.startsWith('cu')) {
+          let [customName, customUrl] = value.split('|');
+          customUrl = customUrl.startsWith('http') ? customUrl : `http://${customUrl}`;
+          customUrl = customUrl || '#';
+          linkList.appendChild(createLinkElement(customName, customUrl, customUrl));
         } else if (key in serviceKeys) {
           let service = serviceKeys[key];
           linkList.appendChild(createLinkElement(service.name, service.desktopUrl + value, service.mobileUrl + value));
@@ -114,4 +118,5 @@
     createLinks();
   </script>
 </body>
+
 </html>
